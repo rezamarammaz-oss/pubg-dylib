@@ -1,0 +1,29 @@
+yaml
+name: Build PUBG dylib
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-13
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Theos
+        run: |
+          git clone --recursive https://github.com/theos/theos.git ~/theos
+          echo "THEOS=~/theos" >> $GITHUB_ENV
+
+      - name: Build dylib
+        run: |
+          export THEOS=~/theos
+          make package
+
+      - name: Upload dylib
+        uses: actions/upload-artifact@v3
+        with:
+          name: AAIPUBG-dylib
+          path: .theos/obj/*.dylib
